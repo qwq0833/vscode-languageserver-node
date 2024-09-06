@@ -1,5 +1,5 @@
 {
-	"name": "vscode-languageclient",
+	"name": "@dep305/vscode-languageclient",
 	"description": "VSCode Language client implementation",
 	"version": "10.0.0-next.12",
 	"author": "Microsoft Corporation",
