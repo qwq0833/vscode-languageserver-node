@@ -1176,7 +1176,7 @@ export abstract class BaseLanguageClient implements FeatureClient<Middleware, La
 		this.logOutputMessage(MessageType.Error, RevealOutputChannelOn.Error, 'Error', message, data, showNotification);
 	}
 
-	private logOutputMessage(type: MessageType, reveal: RevealOutputChannelOn, name: string, message: string, data: any | undefined, showNotification: boolean | 'force'): void {
+	private logOutputMessage(_type: MessageType, _reveal: RevealOutputChannelOn, name: string, message: string, data: any | undefined, _showNotification: boolean | 'force'): void {
 		this.outputChannel.appendLine(`[${name.padEnd(5)} - ${(new Date().toLocaleTimeString())}] ${message}`);
 		if (data !== null && data !== undefined) {
 			this.outputChannel.appendLine(this.data2String(data));
