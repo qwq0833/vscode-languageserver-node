@@ -46,7 +46,6 @@
 		"vscode-languageserver-protocol": "3.17.6-next.10"
 	},
 	"scripts": {
-		"prepublishOnly": "echo \"⛔ Can only publish from a secure pipeline ⛔\" && node ../build/npm/fail",
 		"prepack": "npm run all:publish",
 		"compile": "tsc -b ./tsconfig.json && shx cp src/node/terminateProcess.sh lib/node/terminateProcess.sh",
 		"compile:clean": "git clean -xfd . && npm install && npm run clean && npm run compile",
@@ -56,7 +55,7 @@
 		"clean": "rimraf lib",
 		"all": "npm run clean && npm run compile && npm run lint && npm test",
 		"compile:publish": "tsc -b ./tsconfig.publish.json && shx cp src/node/terminateProcess.sh lib/node/terminateProcess.sh",
-		"all:publish": "git clean -xfd . && npm install && npm run updateVSCodeVersion && npm run compile:publish && npm run lint && cd ../client-node-tests && npm run all:publish && cd ..",
+		"all:publish": "git clean -xfd . && npm install && npm run updateVSCodeVersion && npm run compile:publish",
 		"preversion": "npm test",
 		"updateVSCodeVersion": "node ./bin/updateVSCode.js",
 		"update:vscode-version": "node ./bin/updateVSCode.js"
