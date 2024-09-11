@@ -1001,29 +1001,30 @@ export abstract class BaseLanguageClient implements FeatureClient<Middleware, La
 		this.logOutputMessage(MessageType.Error, RevealOutputChannelOn.Error, 'Error', message, data, showNotification);
 	}
 
-	private logOutputMessage(type: MessageType, reveal: RevealOutputChannelOn, name: string, message: string, data: any | undefined, showNotification: boolean | 'force'): void {
+	private logOutputMessage(_type: MessageType, _reveal: RevealOutputChannelOn, name: string, message: string, data: any | undefined, _showNotification: boolean | 'force'): void {
 		this.outputChannel.appendLine(`[${name.padEnd(5)} - ${(new Date().toLocaleTimeString())}] ${message}`);
 		if (data !== null && data !== undefined) {
 			this.outputChannel.appendLine(this.data2String(data));
 		}
-		if (showNotification === 'force' || (showNotification && this._clientOptions.revealOutputChannelOn <= reveal)) {
-			this.showNotificationMessage(type, message);
-		}
+		// 静默输出全部日志，无论任何等级
+		// if (showNotification === 'force' || (showNotification && this._clientOptions.revealOutputChannelOn <= reveal)) {
+		// 	this.showNotificationMessage(type, message);
+		// }
 	}
 
-	private showNotificationMessage(type: MessageType, message?: string) {
-		message = message ?? 'A request has failed. See the output for more information.';
-		const messageFunc = type === MessageType.Error
-			? Window.showErrorMessage
-			: type === MessageType.Warning
-				? Window.showWarningMessage
-				: Window.showInformationMessage;
-		void messageFunc(message, 'Go to output').then((selection) => {
-			if (selection !== undefined) {
-				this.outputChannel.show(true);
-			}
-		});
-	}
+	// private showNotificationMessage(type: MessageType, message?: string) {
+	// 	message = message ?? 'A request has failed. See the output for more information.';
+	// 	const messageFunc = type === MessageType.Error
+	// 		? Window.showErrorMessage
+	// 		: type === MessageType.Warning
+	// 			? Window.showWarningMessage
+	// 			: Window.showInformationMessage;
+	// 	void messageFunc(message, 'Go to output').then((selection) => {
+	// 		if (selection !== undefined) {
+	// 			this.outputChannel.show(true);
+	// 		}
+	// 	});
+	// }
 
 	private logTrace(message: string, data?: any): void {
 		this.traceOutputChannel.appendLine(`[Trace - ${(new Date().toLocaleTimeString())}] ${message}`);
@@ -1321,18 +1322,19 @@ export abstract class BaseLanguageClient implements FeatureClient<Middleware, La
 				} else {
 					void this.stop();
 				}
-			} else if (error instanceof ResponseError && error.data && error.data.retry) {
-				void Window.showErrorMessage(error.message, { title: 'Retry', id: 'retry' }).then(item => {
-					if (item && item.id === 'retry') {
-						void this.initialize(connection);
-					} else {
-						void this.stop();
-					}
-				});
+			// 静默处理，不要询问用户
+			// } else if (error instanceof ResponseError && error.data && error.data.retry) {
+			// 	void Window.showErrorMessage(error.message, { title: 'Retry', id: 'retry' }).then(item => {
+			// 		if (item && item.id === 'retry') {
+			// 			void this.initialize(connection);
+			// 		} else {
+			// 			void this.stop();
+			// 		}
+			// 	});
 			} else {
-				if (error && error.message) {
-					void Window.showErrorMessage(error.message);
-				}
+				// if (error && error.message) {
+				// 	void Window.showErrorMessage(error.message);
+				// }
 				this.error('Server initialization failed.', error);
 				void this.stop();
 			}
