@@ -297,7 +297,7 @@ export interface DidChangeWatchedFileSignature {
 
 type _WorkspaceMiddleware = {
 	didChangeWatchedFile?: (this: void, event: FileEvent, next: DidChangeWatchedFileSignature) => Promise<void>;
-	handleApplyEdit?: (this: void, params: ApplyWorkspaceEditParams, next: ApplyWorkspaceEditRequest.HandlerSignature) => HandlerResult<ApplyWorkspaceEditResult, void>;
+	handleApplyEdit?: (this: void, params: ApplyWorkspaceEditParams, next: any) => HandlerResult<ApplyWorkspaceEditResult, void>;
 };
 
 export type WorkspaceMiddleware = _WorkspaceMiddleware & ConfigurationMiddleware & DidChangeConfigurationMiddleware & WorkspaceFolderMiddleware & FileOperationsMiddleware;
@@ -1550,7 +1550,7 @@ export abstract class BaseLanguageClient implements FeatureClient<Middleware, La
 					this.setDiagnostics(uri, converted);
 				}
 			}
-		}).finally(() => {
+		}).catch(() => {}).finally(() => {
 			this._diagnosticQueueState = { state: 'idle' };
 			this.triggerDiagnosticQueue();
 		});
@@ -1965,7 +1965,7 @@ export abstract class BaseLanguageClient implements FeatureClient<Middleware, La
 	private async handleApplyWorkspaceEdit(params: ApplyWorkspaceEditParams): Promise<ApplyWorkspaceEditResult> {
 		const middleware = this.clientOptions.middleware?.workspace?.handleApplyEdit;
 		if(middleware) {
-			const resultOrError = await middleware(params, nextParams => this.doHandleApplyWorkspaceEdit(nextParams));
+			const resultOrError = await middleware(params, (nextParams: any) => this.doHandleApplyWorkspaceEdit(nextParams));
 			if(resultOrError instanceof ResponseError) {
 				return Promise.reject(resultOrError);
 			}
