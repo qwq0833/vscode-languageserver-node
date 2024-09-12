@@ -534,6 +534,8 @@ export abstract class BaseLanguageClient implements FeatureClient<Middleware, La
 	private readonly _c2p: c2p.Converter;
 	private readonly _p2c: p2c.Converter;
 
+	private _outputErrors: string[] = [];
+
 	public constructor(id: string, name: string, clientOptions: LanguageClientOptions) {
 		this._id = id;
 		this._name = name;
@@ -1001,10 +1003,17 @@ export abstract class BaseLanguageClient implements FeatureClient<Middleware, La
 		this.logOutputMessage(MessageType.Error, RevealOutputChannelOn.Error, 'Error', message, data, showNotification);
 	}
 
-	private logOutputMessage(_type: MessageType, _reveal: RevealOutputChannelOn, name: string, message: string, data: any | undefined, _showNotification: boolean | 'force'): void {
-		this.outputChannel.appendLine(`[${name.padEnd(5)} - ${(new Date().toLocaleTimeString())}] ${message}`);
+	private addOutputMessage (type: MessageType, message: string){
+		this.outputChannel.appendLine(message);
+		if (type === MessageType.Error) {
+			this._outputErrors.push(message);
+		}
+	}
+
+	private logOutputMessage(type: MessageType, _reveal: RevealOutputChannelOn, name: string, message: string, data: any | undefined, _showNotification: boolean | 'force'): void {
+		this.addOutputMessage(type, `[${name.padEnd(5)} - ${(new Date().toLocaleTimeString())}] ${message}`);
 		if (data !== null && data !== undefined) {
-			this.outputChannel.appendLine(this.data2String(data));
+			this.addOutputMessage(type, this.data2String(data));
 		}
 		// 静默输出全部日志，无论任何等级
 		// if (showNotification === 'force' || (showNotification && this._clientOptions.revealOutputChannelOn <= reveal)) {
@@ -1012,6 +1021,9 @@ export abstract class BaseLanguageClient implements FeatureClient<Middleware, La
 		// }
 	}
 
+	public getOutputErrors(): string[] {
+		return this._outputErrors;
+	}
 	// private showNotificationMessage(type: MessageType, message?: string) {
 	// 	message = message ?? 'A request has failed. See the output for more information.';
 	// 	const messageFunc = type === MessageType.Error
